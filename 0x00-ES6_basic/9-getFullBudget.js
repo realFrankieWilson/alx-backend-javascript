@@ -7,7 +7,7 @@ export default function getFullBudgetObject(income, gdp, capita) {
     getIncomeInDollars() {
       return `$${this.income}`;
     },
-    gdtIncomeInEuros() {
+    getIncomeInEuros() {
       return `${this.income} euros`;
     },
   };
