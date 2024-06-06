@@ -11,3 +11,7 @@ Returns a boolean promise object using __getFullResponseFromAPI(success)__
 ## Task 2: Catch me if you can
 
 Using the fucntion __handleResponseFromAPI(promise)__ to append three handlers to the funciton.
+
+## Task 3: Handle multiple successful promise
+
+A function that resolves all promises and log body firstName lastName to the console
