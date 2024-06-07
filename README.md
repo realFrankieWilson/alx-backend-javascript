@@ -12,3 +12,12 @@ How to use every method of the Promise object.
 Throw/Try
 The await operator
 How to use an async function.
+
+## 0x02. ES6 Classes
+
+In this section of **backend-javascript**, We looked at the following:
+How to define a Class
+How to add methods to a class
+Why and how to add a static method to a class
+How to extend a class from another
+Metaprogramming and symbols
