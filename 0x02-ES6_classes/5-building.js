@@ -1,6 +1,7 @@
+// 5-building.js
 export default class Building {
-  constructor(sqf) {
-    this.sqf = sqf;
+  constructor(sqft) {
+    this.sqft = sqft;
     if (this.constructor !== Building) {
       if (typeof this.evacuationWarningMessage !== 'function') {
         throw new Error(
@@ -10,11 +11,11 @@ export default class Building {
     }
   }
 
-  get sqf() {
+  get sqft() {
     return this._sqft;
   }
 
-  set sqf(value) {
+  set sqft(value) {
     this._sqft = value;
   }
 }
