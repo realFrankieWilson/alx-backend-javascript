@@ -1,6 +1,6 @@
 /**
  * A function that filters student's list based on student's location.
- * @param {Array<string and number>} arrayObj - The array of lists containing students.
+ * @param {Array<object>} arrayObj - The array of lists containing students.
  * @param {string} city - The location of the student.
  *
  * @returns {Array<string>} - An array of objects of students who are
