@@ -20,7 +20,7 @@ export default function getListStudents() {
 
       id: 5,
       firstName: 'Serena',
-      location: 'Francisco',
+      location: 'San Francisco',
     },
 
   ];
