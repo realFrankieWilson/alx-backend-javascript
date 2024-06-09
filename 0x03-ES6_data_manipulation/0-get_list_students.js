@@ -1,3 +1,5 @@
+// A function that returns an array of students informations.
+
 export default function getListStudents() {
   const students = [
     {
