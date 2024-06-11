@@ -18,7 +18,9 @@ promiseCallback.js
 videoRecord.js
 promise2.js
 jsonPromise.js
-
+index.html
+dist/
+main.js
 awat.js
 0-main.js
 7-main.js
