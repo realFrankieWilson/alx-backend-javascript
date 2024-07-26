@@ -1,40 +1,36 @@
 // 2-read_file.js
 const fs = require('fs');
 
-function countStudents(path) {
+function countStudents(file) {
   try {
-    // Read the file synchronously
-    const data = fs.readFileSync(path, 'utf-8');
+    const data = fs.readFileSync(file, 'utf-8');
 
-    // Split the data into lines and filter out empty lines
     const lines = data.split('\n').filter((line) => line.trim() !== '');
 
-    // Initialize a map to hold the counts and names
-    const students = {};
+    const studentsField = {};
 
-    // Process each line aside the header.
-    for (let i = 1; i < lines.length; i + 1) {
-      const [firstName, field] = lines[i].split(',');
+    lines.slice(1).forEach((line) => {
+      const [firstName, field] = line.split(',');
 
-      // Check if the field exists in the map
-      if (field) {
-        if (!students[field]) {
-          students[field] = { count: 0, names: [] };
-        }
-        students[field].count += 1;
-        students[field].names.push(firstName);
+      // Skip empty fields
+      if (!field || !firstName) return;
+
+      if (!studentsField[field]) {
+        studentsField[field] = [];
       }
-    }
 
-    // Get the total number of students
-    const totalStudents = Object.values(students).reduce((acc, curr) => acc + curr.count, 0);
+      // Add first name to the corresponding field
+      studentsField[field].push(firstName);
+    });
 
-    // Display the total number of students
+    const totalStudents = lines.length - 1;
     console.log(`Number of students: ${totalStudents}`);
 
-    // Display the number of students in each field
-    for (const [field, { count, names }] of Object.entries(students)) {
-      console.log(`Number of students in ${field}: ${count}. List: ${names.join(', ')}`);
+    for (const field in studentsField) {
+      if (Object.prototype.hasOwnProperty.call(studentsField, field)) {
+        const studentList = studentsField[field];
+        console.log(`Number of students in ${field}: ${studentList.length}. List: ${studentList.join(', ')}`);
+      }
     }
   } catch (err) {
     throw new Error('Cannot load the database');
