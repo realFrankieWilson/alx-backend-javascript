@@ -1,35 +1,35 @@
 // 2-read_file.js
 const fs = require('fs');
 
-function countStudents(file) {
+function countStudents(path) {
   try {
-    const data = fs.readFileSync(file, 'utf-8');
-
+    const data = fs.readFileSync(path, 'utf8');
     const lines = data.split('\n').filter((line) => line.trim() !== '');
 
-    const studentsField = {};
-
-    lines.slice(1).forEach((line) => {
-      const [firstName, field] = line.split(',');
-
-      // Skip empty fields
-      if (!field || !firstName) return;
-
-      if (!studentsField[field]) {
-        studentsField[field] = [];
-      }
-
-      // Add first name to the corresponding field
-      studentsField[field].push(firstName);
+    const students = lines.slice(1).map((line) => {
+      const [firstName, lastName, age, field] = line.split(',');
+      const result = {
+        firstName, lastName, age: Number(age), field,
+      };
+      return result;
     });
 
-    const totalStudents = lines.length - 1;
+    const totalStudents = students.length;
     console.log(`Number of students: ${totalStudents}`);
 
-    for (const field in studentsField) {
-      if (Object.prototype.hasOwnProperty.call(studentsField, field)) {
-        const studentList = studentsField[field];
-        console.log(`Number of students in ${field}: ${studentList.length}. List: ${studentList.join(', ')}`);
+    const fieldCounts = {}; // Initialized an empty dict
+    students.forEach((student) => {
+      if (!fieldCounts[student.field]) {
+        fieldCounts[student.field] = [];
+      }
+      fieldCounts[student.field].push(student.firstName);
+    });
+
+    for (const field in fieldCounts) {
+      if (Object.prototype.hasOwnProperty.call(fieldCounts, field)) {
+        const count = fieldCounts[field].length;
+        const list = fieldCounts[field].join(', ');
+        console.log(`Number of students in ${field}: ${count}. List: ${list}`);
       }
     }
   } catch (err) {
