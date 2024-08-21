@@ -2,38 +2,41 @@ const http = require('http');
 const fs = require('fs').promises;
 
 /**
- * Counts students from a CSV file and returns the results.
+ * Counts students from a CSV file and logs the results.
  * @param {string} path - The path to the CSV file.
- * @returns {Promise<string>} - A promise that resolves with the student data.
+ * @returns {Promise<void>} - A promise that resolves when the processing is complete.
  * @throws {Error} - Throws an error if the file cannot be read.
  */
 async function countStudents(path) {
-  let result = ''; // Initialize a result string
+  let result = '';
   try {
-    // Attempt to read the file asynchronously
+    // Attempt to read the file asyncchronously
     const data = await fs.readFile(path, 'utf8');
 
     // Split the data into lines and filter out empty lines
     const lines = data.split('\n').filter((line) => line.trim() !== '');
 
-    // Map lines to student objects, ignoring the header
+    // Map line to student objects, ignoring the header
     const students = lines.slice(1).map((line) => {
-      const [firstname, lastname, age, field] = line.split(',');
-      result = {
-        firstname, lastname, age: Number(age), field,
+      const [firstName, lastName, age, field] = line.split(',');
+      const context = {
+        firstName,
+        lastName,
+        age: Number(age),
+        field,
       };
-      return result;
+      return context;
     });
 
     const totalStudents = students.length;
-    result += `Number of students: ${totalStudents}\n`; // Append to result string
+    result += `Number of students: ${totalStudents}\n`;
 
     const fieldCounts = {};
     students.forEach((student) => {
       if (!fieldCounts[student.field]) {
         fieldCounts[student.field] = [];
       }
-      fieldCounts[student.field].push(student.firstname);
+      fieldCounts[student.field].push(student.firstName);
     });
 
     // Append the number of students in each field and their names
@@ -44,7 +47,7 @@ async function countStudents(path) {
         result += `Number of students in ${field}: ${count}. List: ${list}\n`;
       }
     }
-    return result; // Return the result string
+    return result;
   } catch (error) {
     throw new Error('Cannot load the database');
   }
@@ -52,25 +55,21 @@ async function countStudents(path) {
 
 // Create an HTTP server
 const app = http.createServer(async (req, res) => {
-  const { url } = req; // Use object destructuring to get url from req
-
-  // Set the response header to plain text
+  const { url } = req;
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-
   if (url === '/') {
     // Respond to the root URL
     res.end('Hello Holberton School!\n');
   } else if (url === '/students') {
-    // Respond to the /students URL
-    res.write('This is the list of our students\n');
-
     try {
-      // Capture the output of countStudents
-      const studentData = await countStudents(process.argv[2]); // Pass the CSV file name
-      res.write(studentData); // Write the student data to the response
-      res.end(); // End the response
+      // Attempt to Capture the output of countStudents
+      res.write('This is the list of our studentss\n');
+      const studentData = await countStudents(process.argv[2]);
+
+      // write the student data to the response
+      res.write(studentData);
+      res.end();
     } catch (error) {
-      // Handle errors if the database cannot be loaded
       res.end('Cannot load the database\n');
     }
   } else {
