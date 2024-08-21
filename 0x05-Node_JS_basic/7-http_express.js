@@ -2,9 +2,16 @@ const express = require('express');
 const fs = require('fs').promises;
 
 const app = express();
+const hostname = '127.0.0.1';
 const port = 1245;
 
-// Function to count students from a CSV file
+const argParsed = process.argv;
+
+if (argParsed.length !== 3) {
+  console.log('Error');
+  process.exit();
+}
+const file = argParsed[2].trim().toString();
 async function countStudents(fileName) {
   try {
     const students = {};
@@ -30,10 +37,12 @@ async function countStudents(fileName) {
       }
     }
 
-    let result = `Number of students: ${lines.length - 1}\n`;
+    let result = (`Number of students: ${lines.length - 1}`);
 
     for (const [key, value] of Object.entries(fields)) {
-      result += `Number of students in ${key}: ${value}. List: ${students[key].join(', ')}\n`;
+      if (key !== 'field') {
+        result += (`Number of students in ${key}: ${value}. List: ${students[key].join(', ')}`);
+      }
     }
     return result.trim();
   } catch (error) {
@@ -41,27 +50,20 @@ async function countStudents(fileName) {
   }
 }
 
-// Define the root endpoint
 app.get('/', (req, res) => {
-  res.type('text/plain'); // Set response type to plain text
   res.send('Hello Holberton School!');
 });
 
-// Define the /students endpoint
 app.get('/students', async (req, res) => {
-  res.type('text/plain'); // Set response type to plain text
+  res.write('This is the list of our students\n');
   try {
-    const data = await countStudents(process.argv[2]);
-    res.send(`This is the list of our students\n${data}`);
+    const data = await countStudents(file);
+    res.end(data);
   } catch (err) {
-    res.status(500).send('Cannot load the database');
+    res.end('Cannot load the database');
   }
 });
-
-// Start the server
-app.listen(port, () => {
-  console.log(`Server running at http://127.0.0.1:${port}/`);
+app.listen(port, hostname, () => {
 });
 
-// Export the app
 module.exports = app;
