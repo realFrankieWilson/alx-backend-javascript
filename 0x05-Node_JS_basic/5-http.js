@@ -1,74 +1,75 @@
 const http = require('http');
+
 const fs = require('fs').promises;
 
-const hostname = 'localhost';
+const hostname = '127.0.0.1';
 const port = 1245;
 
-/**
- * Reads and parses the CSV file to return student data.
- * @param {string} path - The path to the CSV file.
- * @returns {Promise<string>} - A promise that resolves with the formatted student data.
- * @throws {Error} - Throws an error if the file cannot be read.
- */
-async function getStudentData(path) {
-  let result = '';
+const argParsed = process.argv;
+
+if (argParsed.length !== 3) {
+  console.log('Error');
+  process.exit();
+}
+const file = argParsed[2].trim().toString();
+async function countStudents(fileName) {
   try {
-    const data = await fs.readFile(path, 'utf8');
-    const lines = data.split('\n').filter((line) => line.trim() !== '');
+    const students = {};
+    const fields = {};
 
-    const students = lines.slice(1).map((line) => {
-      const [firstName, lastname, age, field] = line.split(',');
-      return {
-        firstName,
-        lastname,
-        age: Number(age),
-        field,
-      };
-    });
+    const fileContents = await fs.readFile(fileName, 'utf-8');
+    const lines = fileContents.trim().split('\n');
 
-    const totalStudents = students.length;
-    result += `This is the list of our students\nNumber of students: ${totalStudents}\n`;
-
-    const fieldCounts = {};
-    students.forEach((student) => {
-      if (!fieldCounts[student.field]) {
-        fieldCounts[student.field] = [];
-      }
-      fieldCounts[student.field].push(student.firstName);
-    });
-
-    for (const field in fieldCounts) {
-      if (Object.prototype.hasOwnProperty.call(fieldCounts, field)) {
-        const count = fieldCounts[field].length;
-        const list = fieldCounts[field].join(', ');
-        result += `Number of students in ${field}: ${count}. List: ${list}\n`;
+    for (let i = 0; i < lines.length; i += 1) {
+      const line = lines[i].trim();
+      if (line) {
+        const field = line.split(',');
+        if (Object.prototype.hasOwnProperty.call(students, field[3])) {
+          students[field[3]].push(field[0]);
+        } else {
+          students[field[3]] = [field[0]];
+        }
+        if (Object.prototype.hasOwnProperty.call(fields, field[3])) {
+          fields[field[3]] += 1;
+        } else {
+          fields[field[3]] = 1;
+        }
       }
     }
-    return result; // Return the formatted result
+
+    let result = (`Number of students: ${lines.length - 1}`);
+
+    for (const [key, value] of Object.entries(fields)) {
+      if (key !== 'field') {
+        result += (`Number of students in ${key}: ${value}. List: ${students[key].join(', ')}`);
+      }
+    }
+    return result.trim();
   } catch (error) {
     throw new Error('Cannot load the database');
   }
 }
 
-const server = http.createServer(async (req, res) => {
+const app = http.createServer(async (req, res) => {
+  const header = {
+    'content-type': 'text/plain',
+  };
   if (req.url === '/') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Hello Holberton School!\n');
-  } else if (req.url === '/students') {
+    res.writeHead(200, header);
+    res.end('Hello Holberton School!');
+  }
+  if (req.url === '/students') {
+    res.writeHead(200, header);
+    res.write('This is the list of our students\n');
     try {
-      const data = await getStudentData('database.csv'); // Call the function and capture the result
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end(data); // Send the data as the response
-    } catch (error) {
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end(error.message);
+      const data = await countStudents(file);
+      res.end(data);
+    } catch (err) {
+      res.end('Cannot load the database');
     }
-  } else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found\n');
   }
 });
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+app.listen(port, hostname, () => {
 });
+
+module.exports = app;
