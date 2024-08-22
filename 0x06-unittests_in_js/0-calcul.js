@@ -1,3 +1,7 @@
+/**
+ * calculateNumber:
+ * calculates and return the sum of two integers
+ */
 function calculateNumber (a, b) {
   return Math.round(a) + Math.round(b);
 }
