@@ -1,8 +1,5 @@
-/**
- * calculateNumber:
- * calculates and return the sum of two integers
- */
-function calculateNumber (a, b) {
+// 0-calcul.js 
+function calculateNumber(a, b) {
   return Math.round(a) + Math.round(b);
 }
 
