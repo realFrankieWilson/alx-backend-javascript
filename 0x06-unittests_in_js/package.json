@@ -1,5 +1,5 @@
 {
-  "name": "your-project-name",
+  "name": "0x06-unittests_in_js",
   "version": "1.0.0",
   "scripts": {
     "test": "mocha"
